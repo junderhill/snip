@@ -35,39 +35,32 @@ func RedirectHandler() http.HandlerFunc {
 func GetRedirectUrl(slug string) (url string, ok bool) {
 	db, err := badger.Open(badger.DefaultOptions("/tmp/badger"))
 	if err != nil {
-		log.Fatal(err)
-		return "", false
+		return handleError(err)
 	}
 	defer db.Close()
 
+	txn := db.NewTransaction(false)
+	defer txn.Discard()
+
+	item, err := txn.Get([]byte(slug))
+	if err != nil {
+		return handleError(err)
+	}
+
 	var value []byte
-
-	e := db.View(func(txn *badger.Txn) error {
-		item, e := txn.Get([]byte(slug))
-
-		if e != nil {
-			log.Print(e)
-			return nil
-		}
-
-		err := item.Value(func(val []byte) error {
-			value = append([]byte{}, val...)
-			return nil
-		})
-		if err != nil {
-			log.Print(err)
-			return nil
-		}
-		return nil
-	})
-
-	if e != nil {
-		log.Print(e)
-		return "", false
+	value, err = item.ValueCopy(value)
+	if err != nil {
+		return handleError(err)
 	}
 
 	if value != nil {
 		return fmt.Sprintf("%s", value), true
+
 	}
+	return "", false
+}
+
+func handleError(err error) (string, bool) {
+	log.Print(err)
 	return "", false
 }
