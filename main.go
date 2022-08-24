@@ -13,7 +13,8 @@ func main() {
 	if len(os.Args) > 1 && os.Args[1] == "init" {
 		snipinit.InitDb()
 	} else {
-		handler := sniphandler.RedirectHandler()
+
+		handler := sniphandler.MainHandler()
 
 		fmt.Println("Listening on port 8080")
 		http.ListenAndServe(":8080", handler)
