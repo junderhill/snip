@@ -67,7 +67,7 @@ func GetRedirectUrl(slug string) (url string, ok bool) {
 	}
 
 	if value != nil {
-		return fmt.Sprintf("%b", value), true
+		return fmt.Sprintf("%s", value), true
 	}
 	return "", false
 }
