@@ -7,26 +7,7 @@ import (
 	"net/http"
 )
 
-func MainHandler() http.HandlerFunc {
-	return func(out http.ResponseWriter, in *http.Request) {
-		if in.Method == "GET" {
-
-			redirectHandler(out, in)
-			return
-
-		} else if in.Method == "POST" {
-
-			createRedirectHandler(out, in)
-			return
-
-		} else {
-			out.WriteHeader(404)
-			return
-		}
-	}
-}
-
-func createRedirectHandler(out http.ResponseWriter, in *http.Request) {
+func CreateRedirectHandler(out http.ResponseWriter, in *http.Request) {
 	slug := in.URL.Path
 	_, found := GetRedirectUrl(slug)
 
@@ -66,7 +47,7 @@ func saveRedirectUrl(slug string, url string) error {
 	return txn.Commit()
 }
 
-func redirectHandler(out http.ResponseWriter, in *http.Request) {
+func RedirectHandler(out http.ResponseWriter, in *http.Request) {
 	slug := in.URL.Path
 	url, ok := GetRedirectUrl(slug)
 
